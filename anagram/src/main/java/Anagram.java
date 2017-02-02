@@ -1,6 +1,5 @@
 import java.util.*;
 
-import static java.util.Arrays.sort;
 
 public class Anagram {
 
@@ -27,7 +26,4 @@ public class Anagram {
         return new String(sorted);
     }
 
-    public static void main(String[] args) {
-
-    }
 }
