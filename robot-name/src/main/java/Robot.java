@@ -13,7 +13,7 @@ public class Robot {
     }
 
     public String getName() {
-g         return name;
+        return name;
     }
 
     public String createNewName() {
