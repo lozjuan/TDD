@@ -1,16 +1,20 @@
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Locale;
 
 
 class Meetup {
 
-    private LocalDate date;
+    private int month;
+    private int year;
 
 
     public Meetup(int month, int year) {
-        this.date = LocalDate.of(year, month, 1);
+        this.month = month;
+        this.year = year;
     }
 
     public enum MeetupSchedule {
@@ -22,54 +26,49 @@ class Meetup {
         TEENTH
     }
 
-    public LocalDate day(DayOfWeek dayOfWeek, MeetupSchedule time) {
-        LocalDate current = cycleToNext(date.getDayOfWeek(), date);
-        switch (time) {
+    public LocalDate day(DayOfWeek dayOfWeek, MeetupSchedule meetupSchedule) {
+        List<Integer> daysOfWeek = getDaysOfWeek(year, month, dayOfWeek);
+
+        switch (meetupSchedule) {
             case FIRST:
-                break;
+                return LocalDate.of(this.year, this.month, daysOfWeek.get(0));
             case SECOND:
-                current = current.plusWeeks(1);
-                break;
+                return LocalDate.of(this.year, this.month, daysOfWeek.get(1));
             case THIRD:
-                current = current.plusWeeks(2);
-                break;
+                return LocalDate.of(this.year, this.month, daysOfWeek.get(2));
             case FOURTH:
-                current = current.plusDays(3);
-                break;
+                return LocalDate.of(this.year, this.month, daysOfWeek.get(3));
             case TEENTH:
-                while (current.getDayOfMonth() < 13 && current.getDayOfMonth() > 20) {
-                    current = current.plusWeeks(1);
-                }
-                break;
+                return getTeenthDate(daysOfWeek);
             case LAST:
-                current = cycleToPrev(dayOfWeek, date.plusMonths(1).minusDays(1));
-                break;
+                return LocalDate.of(this.year, this.month, daysOfWeek.get(daysOfWeek.size() - 1));
             default:
                 return null;
         }
-        return current;
     }
 
-    private LocalDate cycleToPrev(DayOfWeek dayOfWeek, LocalDate current) {
-        while (current.getDayOfWeek().equals(dayOfWeek)) {
-            current = current.minusDays(1);
+    private List<Integer> getDaysOfWeek(int year, int month, DayOfWeek dayOfWeek) {
+        List<Integer> result = new ArrayList<>(5);
+
+        LocalDate date = LocalDate.of(year, month, 1);
+        while (date.getMonth().getValue() == month) {
+            if (dayOfWeek == date.getDayOfWeek()) {
+                result.add(date.getDayOfMonth());
+                date = date.plusDays(6);
+            }
+            date = date.plusDays(1);
         }
-        return current;
+        return result;
     }
 
-    private LocalDate cycleToNext(DayOfWeek dayOfWeek, LocalDate current) {
-        while (current.getDayOfWeek().equals(dayOfWeek)) {
-            current = current.plusDays(1);
+    private LocalDate getTeenthDate(List<Integer> daysOfWeek) {
+        LocalDate date = null;
+        for (int i = 0; i < daysOfWeek.size(); i++) {
+            int day = daysOfWeek.get(i);
+            if (day < 20) {
+                date = LocalDate.of(year, month, day);
+            }
         }
-        return current;
-    }
-
-    public static void main(String[] args) {
-        LocalDate date = LocalDate.parse("2014-01-20");
-        System.out.println(date.format(DateTimeFormatter.ofPattern("d. MMMM yyyy", new Locale("fr"))));
-        LocalDate expected = LocalDate.of(2013, 5, 13);
-        System.out.println(expected);
-        Meetup test = new Meetup(9, 2012);
-        System.out.println(test.date);
+        return date;
     }
 }
