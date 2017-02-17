@@ -1,10 +1,7 @@
 import java.time.DayOfWeek;
 import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
-
 
 class Meetup {
 
@@ -55,6 +52,7 @@ class Meetup {
             if (dayOfWeek == date.getDayOfWeek()) {
                 result.add(date.getDayOfMonth());
                 date = date.plusDays(6);
+                System.out.println(date.getDayOfWeek());
             }
             date = date.plusDays(1);
         }
